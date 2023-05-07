@@ -23,18 +23,15 @@
 #define PAD_TYPE_NES		3
 #define PAD_TYPE_N64		4
 #define PAD_TYPE_GAMECUBE	5
-#define PAD_TYPE_MD			6
+#define PAD_TYPE_MD		6
 #define PAD_TYPE_SMS		7
+#define PAD_TYPE_GUN		8
 
-#if WITH_9_BUTTON
-#define NES_RAW_SIZE		2
-#else
-// 8 button has 1 byte of data
+#define GUN_RAW_SIZE		1	
 #define NES_RAW_SIZE		1	
-#endif
 #define SNES_RAW_SIZE		2
 #define N64_RAW_SIZE		4
-#define GC_RAW_SIZE			8
+#define GC_RAW_SIZE		8
 #define DB9_RAW_SIZE		2
 #define RAW_SIZE_MAX		GC_RAW_SIZE
 
@@ -114,6 +111,17 @@ typedef struct _nes_pad_data {
 #define NES_BTN_DPAD_LEFT	0x0002
 #define NES_BTN_DPAD_RIGHT	0x0001
 #define NES_BTN_HOME		0x0800
+
+typedef struct _gun_pad_data {
+	unsigned char pad_type; // PAD_TYPE_GUN
+	unsigned short buttons;
+	unsigned char raw_data[GUN_RAW_SIZE];
+} gun_pad_data;
+
+//D3 = light sensor
+//D4 = trigger
+#define GUN_BTN_TRIGGER		0x0080
+#define GUN_BTN_SENSOR		0x0040
 
 typedef struct _n64_pad_data {
 	unsigned char pad_type; // PAD_TYPE_N64
@@ -198,6 +206,7 @@ typedef struct _gamepad_data {
 	union {
 		unsigned char pad_type; // PAD_TYPE_*
 		classic_pad_data classic;
+		gun_pad_data gun;
 		snes_pad_data snes;
 		nes_pad_data nes;
 		n64_pad_data n64;

@@ -20,11 +20,7 @@
 #include <avr/interrupt.h>
 #include <math.h>
 #include "wiimote.h"
-#if WITH_15_BUTTON
-#include "clsc.h"
-#else
-#include "snes.h"
-#endif
+#include "gun.h"
 #include "eeprom.h"
 #include "classic.h"
 #include "analog.h"
@@ -98,11 +94,7 @@ static void pollfunc(void)
 
 int main(void)
 {
-#if WITH_15_BUTTONS
-	Gamepad *clsc_gamepad = NULL;
-#else
-	Gamepad *snes_gamepad = NULL;
-#endif
+	Gamepad *gun_gamepad = NULL;
 	unsigned char analog_style = ANALOG_STYLE_DEFAULT;
 	gamepad_data lastReadData;
 	classic_pad_data classicData;
@@ -114,27 +106,17 @@ int main(void)
 	hwInit();
 	init_config();
 
-#if WITH_15_BUTTONS
-	clsc_gamepad = clscGetGamepad();
-#else
-	snes_gamepad = snesGetGamepad();
-#endif
+	gun_gamepad = gunGetGamepad();
 
 	dataToClassic(NULL, &classicData, 0);
 	pack_classic_data(&classicData, current_report, ANALOG_STYLE_DEFAULT, CLASSIC_MODE_1);
 
-#if WITH_15_BUTTONS
- 		// no alt id
-#elif WITH_13_BUTTONS
-		wm_setAltId(adapter_snes_id);
-#elif WITH_12_BUTTONS
-		wm_setAltId(adapter_snes_id);
-#elif WITH_9_BUTTONS
-		wm_setAltId(adapter_nes_id);
-#else		
-		// 8 button is implied
-		wm_setAltId(adapter_nes_id);
-#endif
+	// no alt id
+	//	wm_setAltId(adapter_snes_id);
+	//	wm_setAltId(adapter_snes_id);
+	//	wm_setAltId(adapter_nes_id);
+	// 8 button is implied
+	//	wm_setAltId(adapter_nes_id);
 
 	wm_init(classic_id, current_report, PACKED_CLASSIC_DATA_SIZE, cal_data, pollfunc);
 	wm_start();
@@ -183,15 +165,9 @@ int main(void)
 		// E = 2.34ms (menu), 2.84ms (in game)
 		//
 
-#if WITH_15_BUTTONS
-		clsc_gamepad = clscGetGamepad();
-		clsc_gamepad->update();
-		clsc_gamepad->getReport(&lastReadData);
-#else
-		snes_gamepad = snesGetGamepad();
-		snes_gamepad->update();
-		snes_gamepad->getReport(&lastReadData);
-#endif
+		gun_gamepad = gunGetGamepad();
+		gun_gamepad->update();
+		gun_gamepad->getReport(&lastReadData);
 
 		if (!wm_altIdEnabled())
 		{
@@ -213,23 +189,8 @@ int main(void)
 		{
 			unsigned char raw[8];
 
-#if WITH_15_BUTTONS
-				memcpy(raw, lastReadData.classic.controller_raw_data, sizeof(lastReadData.classic.controller_raw_data));
-				wm_newaction(raw, sizeof(lastReadData.classic.controller_raw_data));
-#elif WITH_13_BUTTONS
-				memcpy(raw, lastReadData.snes.raw_data, sizeof(lastReadData.snes.raw_data));
-				wm_newaction(raw, sizeof(lastReadData.snes.raw_data));
-#elif WITH_12_BUTTONS
-				memcpy(raw, lastReadData.snes.raw_data, sizeof(lastReadData.snes.raw_data));
-				wm_newaction(raw, sizeof(lastReadData.snes.raw_data));
-#elif WITH_9_BUTTONS
-				memcpy(raw, lastReadData.nes.raw_data, sizeof(lastReadData.nes.raw_data));
-				wm_newaction(raw, sizeof(lastReadData.nes.raw_data));
-#else
-				// 8 button
-				memcpy(raw, lastReadData.nes.raw_data, sizeof(lastReadData.nes.raw_data));
-				wm_newaction(raw, sizeof(lastReadData.nes.raw_data));
-#endif
+			memcpy(raw, lastReadData.gun.raw_data, sizeof(lastReadData.gun.raw_data));
+			wm_newaction(raw, sizeof(lastReadData.gun.raw_data));
 		}
 	}
 
