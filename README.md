@@ -1,7 +1,8 @@
-# Open9button: NES Classic controller with HOME button to Wiimote/NES Classic adapter firmware
+# Openlighgun: NES Classic Lightgun to Wiimote/NES Classic adapter firmware
 
-This is a firmware for using a NES controller on a Wii/Wii U through a Wii remote. The NES Classic edition
-is also supported.
+This is a firmware for using a HD compatible replacement for an NES Lightgun/Zapper on a Wii/Wii U through a Wii remote. The NES Classic edition
+is also supported.  This is intended for Duck Hunt, Hogan's Alley, and Trick Shooting on an NES Classic.
+Please only rip the cartriges yourself, please do not download from the internet.
 
 ## Project homepage
 
